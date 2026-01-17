@@ -4,14 +4,6 @@ set -e
 INSTALL_DIR="/opt/sshwifty"
 SERVICE_NAME="sshwifty"
 
-echo "⚠️ 即将卸载 sshwifty，请确认继续 (y/N)"
-read -r CONFIRM
-
-if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
-    echo "已取消卸载"
-    exit 0
-fi
-
 echo "🛑 停止并禁用 systemd 服务..."
 if systemctl is-active --quiet ${SERVICE_NAME}; then
     systemctl stop ${SERVICE_NAME}
