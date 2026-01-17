@@ -10,7 +10,7 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 if ss -tuln | grep -q ":${PORT} "; then
-  echo "❌ 端口 ${PORT} 已被占用，请先释放或修改 PORT 后再运行"
+  echo "端口 ${PORT} 已被占用，请先释放后再运行"
   exit 1
 fi
 
