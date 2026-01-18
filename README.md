@@ -4,12 +4,17 @@
 
 * Installation
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/co2f2e/sshwifty/main/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/co2f2e/sshwifty/main/install.sh) install
 ```
 
 * Uninstallation
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/co2f2e/sshwifty/main/uninstall.sh)
+```
+
+* ChangeLoginPassword
+```
+bash <(curl -Ls https://raw.githubusercontent.com/co2f2e/sshwifty/main/install.sh) passwd
 ```
 
 * Nginx
