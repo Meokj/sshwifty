@@ -189,7 +189,7 @@ change_password() {
 	fi
 
 	while true; do
-		read -s -p "请输入新的 SharedKey（至少8位）: " PASS1
+		read -s -p "请输入新的 SharedKey: " PASS1
 		echo
 		read -s -p "请再次确认 SharedKey: " PASS2
 		echo
