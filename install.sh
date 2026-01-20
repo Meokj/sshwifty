@@ -130,7 +130,10 @@ install_sshwifty() {
   "Servers": [
     {
       "ListenInterface": "127.0.0.1",
-      "ListenPort": ${PORT}
+      "ListenPort": ${PORT},
+	  "ReadTimeout": 120,
+      "WriteTimeout": 120,
+      "HeartbeatTimeout": 10
     }
   ]
 }
