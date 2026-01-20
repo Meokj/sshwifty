@@ -13,8 +13,36 @@ if [ "$(id -u)" != "0" ]; then
 	exit 1
 fi
 
-install_sshwifty() {
+stall_dependencies() {
+    echo "检查并安装必要依赖: tar, curl, ss"
 
+    MISSING=()
+    for CMD in tar curl ss; do
+        if ! command -v "$CMD" >/dev/null 2>&1; then
+            MISSING+=("$CMD")
+        fi
+    done
+
+    if [ "${#MISSING[@]}" -eq 0 ]; then
+        return
+    fi
+
+    echo "缺少依赖: ${MISSING[*]}"
+
+    if [ -f /etc/debian_version ]; then
+        echo "检测到 Debian/Ubuntu 系统，使用 apt 安装"
+        apt update
+        apt install -y "${MISSING[@]}"
+    elif [ -f /etc/redhat-release ]; then
+        echo "检测到 RHEL/CentOS 系统，使用 yum 安装"
+        yum install -y "${MISSING[@]}"
+    else
+        echo "未能自动识别系统类型，请手动安装: ${MISSING[*]}"
+        exit 1
+    fi
+}
+
+install_sshwifty() {
 	if ss -tuln | grep -q ":${PORT} "; then
 		echo "端口 ${PORT} 已被占用，请先释放或修改 PORT 后再运行"
 		exit 1
@@ -96,23 +124,19 @@ install_sshwifty() {
 	FILETYPE=$(file "$FILENAME")
 	if echo "$FILETYPE" | grep -q "tar archive"; then
 		echo "解压 tar.gz 压缩包"
-		tar -xzf "$FILENAME"
-	elif echo "$FILETYPE" | grep -q "gzip compressed data"; then
-		echo "解压 gzip 压缩文件"
-		gunzip -k "$FILENAME"
+		tar -xzf "$FILENAME" && rm -f "$FILENAME"
+		
+		TARFILE=$(find . -maxdepth 1 -type f -name "*.tar" | head -n1)
+    	if [ -n "$TARFILE" ]; then
+        	echo "再次解压 tar 文件: $TARFILE"
+        	tar -xf "$TARFILE" && rm -f "$TARFILE"
+    	fi
 	else
-		echo "下载的文件不是 gzip 或 tar.gz 压缩包"
+		echo "下载的文件不是 tar.gz 压缩包"
 		exit 1
 	fi
 
 	EXEC_FILE=$(find . -maxdepth 1 -type f -executable | head -n1)
-	if [ -z "$EXEC_FILE" ]; then
-		BASENAME=$(basename "$FILENAME" .tar.gz)
-		BASENAME=$(basename "$BASENAME" .gz)
-		if [ -f "$BASENAME" ]; then
-			EXEC_FILE="$BASENAME"
-		fi
-	fi
 
 	if [ -z "$EXEC_FILE" ]; then
 		echo "解压后未找到可执行文件"
@@ -213,9 +237,7 @@ change_password() {
 	done
 
 	cp "$CONFIG_FILE" "${CONFIG_FILE}.bak.$(date +%F_%T)"
-
 	sed -i "s/\"SharedKey\": \".*\"/\"SharedKey\": \"${PASS1}\"/" "$CONFIG_FILE"
-
 	systemctl restart ${SERVICE_NAME}
 
 	if systemctl is-active --quiet ${SERVICE_NAME}; then
