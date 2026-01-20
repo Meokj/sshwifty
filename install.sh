@@ -111,7 +111,7 @@ install_sshwifty() {
 		grep browser_download_url |
 		grep linux |
 		grep "$ARCH_TAG" |
-		grep -E "\.tar\.gz$" |
+		grep -E "\.tar(\.gz)?$" |
 		head -n1 |
 		cut -d '"' -f4)
 
@@ -145,13 +145,6 @@ install_sshwifty() {
 	done
 
 	EXEC_FILE=$(find . -maxdepth 1 -type f -executable | head -n1)
-	if [ -z "$EXEC_FILE" ]; then
-		echo "解压后未找到可执行文件"
-		exit 1
-	fi
-
-	EXEC_FILE=$(find . -maxdepth 1 -type f -executable | head -n1)
-
 	if [ -z "$EXEC_FILE" ]; then
 		echo "解压后未找到可执行文件"
 		exit 1
