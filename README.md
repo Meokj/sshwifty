@@ -5,7 +5,8 @@
 > ⚠️ Warning
 >
 > **Do not provide Sshwifty service under a subpath of your domain** (e.g.`https://example.com/ssh`).  
-> This is not standard and is **not officially supported**. It is recommended to access the service directly via the top-level domain.
+> This is not standard and is **not officially supported**.
+> It is recommended to access the service directly via the top-level domain.
 
 * Installation
 ```
